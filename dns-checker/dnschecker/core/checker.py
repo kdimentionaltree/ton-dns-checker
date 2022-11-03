@@ -11,7 +11,7 @@ from multiprocessing import Pool
 from multiprocessing.pool import ThreadPool
 from threading import Thread
 
-from backend.dnschecker.schemas.dht import DHTNode
+from dnschecker.schemas.dht import DHTNode
 
 
 class DHTChecker:
@@ -19,7 +19,8 @@ class DHTChecker:
                  config_path, 
                  resolve_binary_path,
                  ping_binary_path,
-                 port=40000,):
+                 port=40000,
+                 timeout=10):
         self.config_path = config_path
         with open(self.config_path, 'r') as f:
             self.config = json.load(f)
@@ -27,10 +28,12 @@ class DHTChecker:
         self.resolve_binary_path = resolve_binary_path
         self.ping_binary_path = ping_binary_path
         self.port = port
+        self.timeout = timeout
 
         self.dht_list = {idx: DHTNode.parse_obj(dht) for idx, dht in enumerate(self.config['dht']['static_nodes']['nodes'])}
         self.dht_dict = {dht.id.key: idx for idx, dht in self.dht_list.items()}
         self.working_status = {idx: False for idx in self.dht_list}
+        
         self.ping_thread = Thread(target=self._ping_loop)
         self.ping_thread.start()
 
@@ -52,6 +55,10 @@ class DHTChecker:
                     except Exception as ee:
                         print(ee, line)
             time.sleep(10)
+
+    @property
+    def dht_status(self):
+        return list(zip(self.dht_list, self.working_status))
 
     def _check_adnl(self, adnl, idx, port=None, timeout=10):
         if self.working_status[idx]:
@@ -88,14 +95,12 @@ class DHTChecker:
     def dht_count(self):
         return len(self.config['dht']['static_nodes']['nodes'])
 
-    def check_adnl(self, adnl, verbose=True, timeout=5):
-        func = partial(self._check_adnl, adnl, timeout=timeout)
+    def check_adnl(self, adnl):
+        func = partial(self._check_adnl, adnl, timeout=self.timeout)
         with ThreadPool(self.dht_count) as P:
-            res = P.imap_unordered(func, range(self.dht_count))
-            res = tqdm(res, total=self.dht_count, disable=not verbose)
-            res = list(res)
-        return dict(sorted(res))
+            res = P.map(func, range(self.dht_count))
+        return dict(res)
     
-    def check_adnl_seq(self, adnl, verbose=True, timeout=5):
-        return dict(self._check_adnl(adnl, idx, port=self.port + 1, timeout=timeout) 
-                    for idx in tqdm(range(self.dht_count), disable=not verbose))
+    # def check_adnl_seq(self, adnl, verbose=True, timeout=5):
+    #     return dict(self._check_adnl(adnl, idx, port=self.port + 1, timeout=timeout) 
+    #                 for idx in tqdm(range(self.dht_count), disable=not verbose))

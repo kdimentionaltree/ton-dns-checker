@@ -1,6 +1,6 @@
 version: '3.9'
 services:
-  dnschecker-backend:
+  dns-checker:
     image: localhost:5000/dns-check-backend:latest
     build:
       context: backend
