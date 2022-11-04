@@ -1,6 +1,6 @@
 import traceback
 
-from fastapi import FastAPI, APIRouter
+from fastapi import FastAPI
 from fastapi import Query, Depends
 
 from dnschecker.schemas.models import DhtNodeModel, DhtResolveModel
@@ -30,6 +30,8 @@ async def get_dhts(checker: DHTChecker=Depends(dht_checker_dep)):
 async def get_resolve(adnl: str=Query(..., example='2D7CF7C6238E4E8B7DA16B0707222C3A95C8DB6A8E4FA4F101052306130EEFDC'), 
                       checker: DHTChecker=Depends(dht_checker_dep)):
     try:
+        adnl = adnl.upper().strip()
+        logger.info(f'/resolve with adnl: "{adnl}"')
         res = checker.check_adnl(adnl)
         return [DhtResolveModel.parse_obj(obj) for obj in res.values()]
     except:
