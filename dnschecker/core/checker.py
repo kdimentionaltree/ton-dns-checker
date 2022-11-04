@@ -19,7 +19,7 @@ class DHTChecker:
                  config_path, 
                  resolve_binary_path,
                  ping_binary_path,
-                 port=40000,
+                 port=32768,
                  timeout=10):
         self.config_path = config_path
         with open(self.config_path, 'r') as f:
@@ -58,7 +58,7 @@ class DHTChecker:
 
     @property
     def dht_status(self):
-        return list(zip(self.dht_list, self.working_status))
+        return [(idx, dht, self.working_status[idx]) for idx, dht in self.dht_list.items()]
 
     def _check_adnl(self, adnl, idx, port=None, timeout=10):
         if self.working_status[idx]:
@@ -84,22 +84,25 @@ class DHTChecker:
                         if line.startswith('VALUE: '):
                             res = line.split(' ')[-1]
                             res = base64.b64decode(res)
-                ip, port = struct.unpack('ih', res[12:12 + 4 + 2])
-                ip = socket.inet_ntoa(struct.pack('>i', ip))
-                return idx, f'{ip}:{port}'
+                ip_int, port = struct.unpack('ih', res[12:12 + 4 + 2])
+                ip = socket.inet_ntoa(struct.pack('>i', ip_int))
+                return idx, {'ip': ip, 'ip_int': ip_int, 'port': port}
             except:
                 pass
-        return idx, None
+        return idx, {}
 
     @property
     def dht_count(self):
         return len(self.config['dht']['static_nodes']['nodes'])
 
-    def check_adnl(self, adnl):
+    def check_adnl_parallel(self, adnl):
         func = partial(self._check_adnl, adnl, timeout=self.timeout)
         with ThreadPool(self.dht_count) as P:
             res = P.map(func, range(self.dht_count))
-        return dict(res)
+        return dict(sorted(res))
+
+    def check_adnl(self, adnl):
+        return self.check_adnl_parallel(adnl)
     
     # def check_adnl_seq(self, adnl, verbose=True, timeout=5):
     #     return dict(self._check_adnl(adnl, idx, port=self.port + 1, timeout=timeout) 

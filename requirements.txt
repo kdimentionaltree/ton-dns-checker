@@ -3,3 +3,5 @@ requests
 uvicorn
 tqdm
 loguru
+ring
+redis

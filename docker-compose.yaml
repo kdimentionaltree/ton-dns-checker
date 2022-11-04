@@ -1,14 +1,23 @@
 version: '3.9'
 services:
+  dns-checker-cache:
+    image: redis:latest
+    networks:
+      - toncenter-network
+    deploy:
+      mode: replicated
+      replicas: 1
   dns-checker:
     image: localhost:5000/dns-check-backend:latest
     build:
-      context: backend
+      context: .
       dockerfile: Dockerfile
     # command: -c "uvicorn dnschecker.mock:app --host 0.0.0.0 --port 8081"
-    command: -c "python3 main.py"
+    command: -c "uvicorn dnschecker.main:app --host 0.0.0.0 --port 8081"
     networks:
       - toncenter-network
+    secrets:
+      - global-config
     deploy:
       mode: replicated
       replicas: 1

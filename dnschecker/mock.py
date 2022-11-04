@@ -1,10 +1,10 @@
 import time
 import traceback
 
-from fastapi import FastAPI, APIRouter
+from fastapi import FastAPI
 from fastapi import Query, Path, Request
 
-from dnschecker.models import DhtNodeModel, DhtResolveModel
+from dnschecker.schemas.models import DhtNodeModel, DhtResolveModel
 from typing import List, Optional
 
 from loguru import logger
@@ -20,14 +20,14 @@ async def get_dhts():
         DhtNodeModel.parse_obj({'idx': 2, 'ip': '1.2.3.6', 'key': 'abe', 'port': '3333', 'is_online': True}),
     ]
 
-@api.post('/dht/{idx}/resolve', response_model=Optional[DhtResolveModel])
-async def post_dht_resolve(idx: int=Path(...), adnl: str=Query(...)):
-    if idx == 0:
-        return DhtResolveModel.parse_obj({'ip': '123.123.123.123', 'port': '9999'})
-    if idx == 1:
-        return None
-    if idx == 2:
-        return None
+
+@api.get('/resolve', response_model=List[DhtResolveModel])
+async def get_resolve(adnl: str=Query(...)):
+    return [
+        DhtResolveModel.parse_obj({'ip': '123.123.123.123', 'port': '7777'}),
+        DhtResolveModel.parse_obj({}),
+        DhtResolveModel.parse_obj({'ip': '123.123.123.123', 'port': '9999'}),
+    ]
 
 
 app = FastAPI()
