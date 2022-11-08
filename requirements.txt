@@ -5,3 +5,5 @@ tqdm
 loguru
 ring
 redis
+aioredis
+pytonlib

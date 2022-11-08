@@ -4,6 +4,7 @@ from typing import Optional
 import socket, struct
 
 from dnschecker.schemas.dht import DHTNode
+from dnschecker.schemas.liteserver import Liteserver
 
 
 class DhtNodeModel(BaseModel):
@@ -26,8 +27,30 @@ class DhtNodeModel(BaseModel):
         })
         
 
+class LiteserverModel(BaseModel):
+    idx: int
+    ip: str
+    ip_int: int
+    port: int
+    key: str
+    is_online: bool
+
+    @classmethod
+    def from_liteserver(cls, idx, liteserver: Liteserver, is_online: bool):
+        return LiteserverModel.parse_obj({
+            'idx': idx,
+            'ip': socket.inet_ntoa(struct.pack('>i', liteserver.ip)),
+            'ip_int': liteserver.ip,
+            'port': liteserver.port,
+            'key': liteserver.id.key,
+            'is_online': is_online
+        })
+
 
 class DhtResolveModel(BaseModel):
     ip: Optional[str] = None
     port: Optional[int] = None
-        
+
+
+class LiteserverResolveModel(BaseModel):
+    adnl: Optional[str] = None

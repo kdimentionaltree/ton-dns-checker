@@ -1,5 +1,5 @@
-from dnschecker.core.checker import DHTChecker
-from dnschecker.core.cache import CachedDHTChecker
+from dnschecker.core.cache import CachedDHTChecker, CachedDNSResolver
+from loguru import logger
 
 
 class DhtCheckerDep:
@@ -19,4 +19,17 @@ class DhtCheckerDep:
         return self.checker
 
 
+class DnsResolverDep:
+    def __init__(self):
+        self.resolver = None
+    
+    async def init(self, loop):
+        self.resolver = CachedDNSResolver('/run/secrets/global-config', loop)
+        await self.resolver.init()
+
+    def __call__(self):
+        return self.resolver
+
+
 dht_checker_dep = DhtCheckerDep()
+dns_resolver_dep = DnsResolverDep()

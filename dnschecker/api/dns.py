@@ -1,11 +1,18 @@
 import traceback
+import asyncio
 
 from fastapi import FastAPI
 from fastapi import Query, Depends
 
-from dnschecker.schemas.models import DhtNodeModel, DhtResolveModel
-from dnschecker.core.checker import DHTChecker
-from dnschecker.api.deps import dht_checker_dep
+from dnschecker.schemas.models import (
+    DhtNodeModel, 
+    DhtResolveModel,
+    LiteserverModel,
+    LiteserverResolveModel
+)
+from dnschecker.core.dht.dht_checker import DHTChecker
+from dnschecker.core.dns.dns_checker import DNSResolver
+from dnschecker.api.deps import dht_checker_dep, dns_resolver_dep
 from typing import List
 
 from loguru import logger
@@ -37,3 +44,26 @@ async def get_resolve(adnl: str=Query(..., example='2D7CF7C6238E4E8B7DA16B070722
     except:
         logger.critical(f"METHOD: /resolve. Error: {traceback.format_exc()}")
     return []    
+
+
+@api.get('/liteservers', response_model=List[LiteserverModel])
+async def get_liteservers(resolver: DNSResolver=Depends(dns_resolver_dep)):
+    try:
+        return [
+            LiteserverModel.from_liteserver(idx, ls, True)
+            for idx, ls in enumerate(resolver.liteservers)
+        ]
+    except:
+        logger.critical(f"METHOD: /liteservers. Error: {traceback.format_exc()}")
+    return []
+
+
+@api.get('/ls_resolve', response_model=List[LiteserverResolveModel])
+async def get_ls_resolve(domain: str=Query(..., example='kdimentionaltree.ton'),
+                         resolver: DNSResolver=Depends(dns_resolver_dep)):
+    try:
+        res = await resolver.resolve(domain, 'site')
+        return [LiteserverResolveModel.parse_obj({'adnl': adnl}) for adnl in res]
+    except:
+        logger.critical(f"METHOD: /ls_resolve. Error: {traceback.format_exc()}")
+    return []
