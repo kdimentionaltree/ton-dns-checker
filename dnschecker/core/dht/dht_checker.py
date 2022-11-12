@@ -59,6 +59,7 @@ class DHTChecker:
         return [(idx, dht, self.working_status[idx]) for idx, dht in self.dht_list.items()]
 
     def _check_adnl(self, adnl, idx, port=None, timeout=10):
+        adnl = adnl.strip()
         if self.working_status[idx]:
             if port is None:
                 port = self.port + idx + 1
