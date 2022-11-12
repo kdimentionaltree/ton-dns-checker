@@ -54,7 +54,7 @@ class DNSResolver:
         return None
 
     async def _resolve(self, domain, category):
-        domain_raw = encode_domain(domain)
+        domain_raw = encode_domain(domain.strip())
 
         tasks = [self._resolve_ls(idx, domain_raw, category)
                  for idx in self.clients]
