@@ -10,7 +10,14 @@ const Search: React.FC<types.SearchProps> = ({ onSearch, value }) => {
   };
 
   const onSubmit = () => {
-    if (state.trim() !== value) onSearch(state.trim());
+    onSearch(state.trim());
+  };
+
+  const onKeyUp = (e: React.KeyboardEvent<HTMLInputElement>): void => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      onSearch(state.trim());
+    }
   };
 
   return (
@@ -29,6 +36,7 @@ const Search: React.FC<types.SearchProps> = ({ onSearch, value }) => {
           color="secondary"
           size="small"
           onBlur={onSubmit}
+          onKeyUp={onKeyUp}
           fullWidth
         />
       </Grid>
