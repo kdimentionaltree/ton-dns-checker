@@ -12,13 +12,13 @@ from dnschecker.schemas.models import (
 )
 from dnschecker.core.dht.dht_checker import DHTChecker
 from dnschecker.core.dns.dns_checker import DNSResolver
-from dnschecker.api.deps import dht_checker_dep, dns_resolver_dep
+from dnschecker.api.deps import dht_checker_dep, dns_resolver_dep, api_key_dep
 from typing import List
 
 from loguru import logger
 
 
-api = FastAPI(docs_url='/')
+api = FastAPI(docs_url='/', dependencies=[Depends(api_key_dep)])
 
 
 @api.get('/dhts', response_model=List[DhtNodeModel])

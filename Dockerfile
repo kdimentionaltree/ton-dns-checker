@@ -26,10 +26,12 @@ RUN cmake --build . -j$(nproc) --target dht-resolve dht-ping-servers
 
 
 FROM node:18-bullseye as frontend_builder
+ARG REACT_APP_API_URL
+ARG REACT_APP_API_KEY
 
 WORKDIR /app
 COPY frontend/ /app
-RUN yarn install
+RUN echo "env: ${REACT_APP_API_URL} ${REACT_APP_API_KEY}" && yarn install
 RUN yarn build
 
 

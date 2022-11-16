@@ -3,15 +3,22 @@ services:
   dns-checker-cache:
     image: redis:latest
     networks:
-      - toncenter-network
+      - main
     deploy:
       mode: replicated
       replicas: 1
+      placement:
+        constraints:
+          - "node.role==manager"
+          - "node.labels.dns-checker==true"
   dns-checker:
     image: localhost:5000/ton-dns-checker:latest
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        REACT_APP_API_URL: ${REACT_APP_API_URL}
+        REACT_APP_API_KEY: ${REACT_APP_API_KEY}
     # command: -c "uvicorn dnschecker.mock:app --host 0.0.0.0 --port 8081"
     command: -c "uvicorn dnschecker.main:app --host 0.0.0.0 --port 8081"
     networks:
@@ -21,6 +28,10 @@ services:
     deploy:
       mode: replicated
       replicas: 1
+      placement:
+        constraints:
+          - "node.role==manager"
+          - "node.labels.dns-checker==true"
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8081/healthcheck"]
       interval: 5s

@@ -1,11 +1,13 @@
 let headers: HeadersInit = {};
 
+const API_URL = process.env.REACT_APP_API_URL ?? "";
+
 if (process.env.REACT_APP_API_KEY)
   headers["X-API-Key"] = process.env.REACT_APP_API_KEY;
 
 export const fetchDHTData = async () => {
   const response = await fetch(
-    `${process.env.REACT_APP_API_URL}/api/dns/dhts`,
+    `${API_URL}/api/dns/dhts`,
     {
       headers,
     }
@@ -15,7 +17,7 @@ export const fetchDHTData = async () => {
 };
 export const fetchDHTResolved = async (value: string) => {
   const response = await fetch(
-    `${process.env.REACT_APP_API_URL}/api/dns/resolve?adnl=${value}`,
+    `${API_URL}/api/dns/resolve?adnl=${value}`,
     {
       headers,
     }
@@ -25,7 +27,7 @@ export const fetchDHTResolved = async (value: string) => {
 };
 export const fetchLSData = async () => {
   const response = await fetch(
-    `${process.env.REACT_APP_API_URL}/api/dns/liteservers`,
+    `${API_URL}/api/dns/liteservers`,
     {
       headers,
     }
@@ -35,7 +37,7 @@ export const fetchLSData = async () => {
 };
 export const fetchLSResolved = async (value: string) => {
   const response = await fetch(
-    `${process.env.REACT_APP_API_URL}/api/dns/ls_resolve?domain=${value}`,
+    `${API_URL}/api/dns/ls_resolve?domain=${value}`,
     {
       headers,
     }
