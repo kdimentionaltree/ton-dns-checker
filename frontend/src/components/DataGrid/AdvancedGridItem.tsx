@@ -1,4 +1,4 @@
-import { Grid, styled, useTheme, Fade } from "@mui/material";
+import { Grid, styled, Fade, IconButton } from "@mui/material";
 import React from "react";
 import { useSnackbar } from "notistack";
 import { ContentCopyOutlined } from "@mui/icons-material";
@@ -10,29 +10,25 @@ export const AdvancedGridItem: React.FC<types.AdvancedGridItemProps> = ({
   isLink,
   ...restProps
 }) => {
+  const ref = React.createRef<HTMLSpanElement>();
   const { enqueueSnackbar } = useSnackbar();
-
-  const theme = useTheme();
-  const handleClick = (e: React.MouseEvent<HTMLElement>) => {
-    copy.copyToClipboard(e.currentTarget.innerText, {
+  const handleClick = () => {
+    copy.copyToClipboard(ref.current?.innerText ?? "", {
       snackbar: enqueueSnackbar,
       transitionComponent: Fade,
     });
   };
-  const StyledLink = styled(StyledDiv)`
-    svg {
-      fill: ${theme.palette.secondary.main};
-    }
-  `;
 
   return (
     <Grid item {...restProps}>
       {label && <Label>{label}</Label>}
       {isLink ? (
-        <StyledLink onClick={handleClick}>
-          <span>{content}</span>
-          <ContentCopyOutlined fontSize="small" />
-        </StyledLink>
+        <StyledDiv>
+          <span ref={ref}>{content}</span>
+          <StyledIcon onClick={handleClick} size="small" color="secondary">
+            <ContentCopyOutlined fontSize="small" />
+          </StyledIcon>
+        </StyledDiv>
       ) : (
         content
       )}
@@ -46,20 +42,15 @@ const Label = styled("p")`
   font-size: 0.9em;
 `;
 const StyledDiv = styled("div")`
-cursor: pointer;
-display: flex;
-justify-content: center;
-span {
-  max-width: 95%;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-svg {
-  margin-left: 5px;
-  width: 5%
-  font-size: 0.9em;
-  vertical-align: middle;
-  margin-bottom: 1px;
-}
+  display: flex;
+  justify-content: center;
+  span {
+    max-width: 95%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+`;
+const StyledIcon = styled(IconButton)`
+  padding: 0px 5px;
 `;
