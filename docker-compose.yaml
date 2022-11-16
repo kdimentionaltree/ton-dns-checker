@@ -8,7 +8,7 @@ services:
       mode: replicated
       replicas: 1
   dns-checker:
-    image: localhost:5000/dns-check-backend:latest
+    image: localhost:5000/ton-dns-checker:latest
     build:
       context: .
       dockerfile: Dockerfile
@@ -28,8 +28,9 @@ services:
       retries: 5
       start_period: 40s
 networks:
-  toncenter-network:
-    external: true
+  main:
+    attachable: true
+    external: false
 secrets:
   global-config:
     file: private/global-config.json
