@@ -32,6 +32,20 @@ class DNSResolver:
                                              tonlib_timeout=10)
 
         self.liteservers = [Liteserver.parse_obj(x) for x in self.config['liteservers']]
+
+    # async def _ping_loop(self):
+    #     while True:
+    #         tasks = []
+    #         for idx, client in self.clients.items():
+    #             task = client.get_masterchain_info()
+    #             tasks.append(task)
+    #         results = asyncio.wait(tasks)
+    #         for task in results:
+    #             try:
+    #                 task.result()
+    #             except:
+    #                 pass
+
         
     async def init(self):
         coro_list = [client.init() for client in self.clients.values()]
