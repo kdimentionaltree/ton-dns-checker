@@ -59,11 +59,16 @@ async def get_liteservers(resolver: DNSResolver=Depends(dns_resolver_dep)):
 
 
 @api.get('/ls_resolve', response_model=List[LiteserverResolveModel])
-async def get_ls_resolve(domain: str=Query(..., example='kdimentionaltree.ton'),
+async def get_ls_resolve(domain: str=Query(..., example='foundation.ton'),
+                         category: str=Query('site', examplee='site'),
                          resolver: DNSResolver=Depends(dns_resolver_dep)):
     try:
-        res = await resolver.resolve(domain, 'site')
-        return [LiteserverResolveModel.parse_obj({'adnl': adnl}) for adnl in res]
+        res = await resolver.resolve(domain, category)
+        if category == 'site': 
+            return [LiteserverResolveModel.parse_obj({'adnl': adnl}) for adnl in res]
+        if category == 'wallet':
+            return [LiteserverResolveModel.parse_obj({'wallet': wallet}) for wallet in res]
+        raise ValueError(f"unknown category '{category}'")
     except:
         logger.critical(f"METHOD: /ls_resolve. Error: {traceback.format_exc()}")
     return []

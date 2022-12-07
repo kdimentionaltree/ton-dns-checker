@@ -11,7 +11,7 @@ services:
         constraints:
           - "node.labels.${TONCENTER_ENV}.dns-checker==true"
   dns-checker:
-    image: localhost:5000/ton-dns-checker:latest
+    image: localhost:5000/ton-dns-checker:${TONCENTER_ENV}
     build:
       context: .
       dockerfile: Dockerfile
@@ -42,4 +42,4 @@ networks:
     external: false
 secrets:
   global-config:
-    file: private/global-config.json
+    file: ${TON_LITESERVER_CONFIG:-private/mainnet.json}

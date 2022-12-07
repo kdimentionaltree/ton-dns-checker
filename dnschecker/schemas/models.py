@@ -52,5 +52,10 @@ class DhtResolveModel(BaseModel):
     port: Optional[int] = None
 
 
+class AddressInfo(BaseModel):
+    raw_form: str
+
+
 class LiteserverResolveModel(BaseModel):
     adnl: Optional[str] = None
+    wallet: Optional[AddressInfo] = None
