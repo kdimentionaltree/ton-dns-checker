@@ -21,9 +21,9 @@ services:
       args:  # 构建参数
         REACT_APP_API_URL: ${REACT_APP_API_URL}
         REACT_APP_API_KEY: ${REACT_APP_API_KEY}
-    command: -c "uvicorn dnschecker.main:app --host 0.0.0.0 --port 8081"  # 启动命令
+    command: -c "uvicorn dnschecker.main:app --host 0.0.0.0 --port 8090"  # 启动命令
     ports:
-      - "8081:8081"  # 映射容器端口 8081 到主机的端口 8081
+      - "8090:8090"  # 映射容器端口 8090 到主机的端口 8090
     networks:
       - main  # 连接到名为 main 的网络
     secrets:  # 使用 Docker secret
@@ -35,7 +35,7 @@ services:
         constraints:  # 限制服务运行在特定节点上
           - "node.labels.${TONCENTER_ENV}.dns-checker==true"
     healthcheck:  # 健康检查配置
-      test: ["CMD", "curl", "-f", "http://localhost:8081/healthcheck"]
+      test: ["CMD", "curl", "-f", "http://localhost:8090/healthcheck"]
       interval: 5s  # 检查间隔
       timeout: 10s  # 超时时间
       retries: 5  # 重试次数
