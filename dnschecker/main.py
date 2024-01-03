@@ -1,6 +1,16 @@
+# # from fastapi import FastAPI, Request
+# from fastapi.staticfiles import StaticFiles
+# from fastapi.middleware.cors import CORSMiddleware
+# # from fastapi import FastAPI, Request, StaticFiles, CORSMiddleware
+# from fastapi import FastAPI, Request, CORSMiddleware
+# # from starlette.staticfiles import StaticFiles
+
 from fastapi import FastAPI, Request
-from fastapi.staticfiles import StaticFiles
-from fastapi.middleware.cors import CORSMiddleware
+from starlette.staticfiles import StaticFiles
+from starlette.middleware.cors import CORSMiddleware
+
+from dnschecker.api.dns import create_dns_routes
+
 
 import time
 import logging
@@ -22,6 +32,8 @@ app.add_middleware(
 )
 
 logger = logging.getLogger(__name__)
+
+create_dns_routes(app)
 
 # 其他路由和事件处理器
 
