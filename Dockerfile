@@ -7,8 +7,8 @@ RUN apt-get update && \
     apt-get install -y build-essential cmake clang openssl libssl-dev zlib1g-dev gperf wget git curl libreadline-dev ccache libmicrohttpd-dev
 
 # 克隆 TON 仓库并检出指定分支
-ARG TON_REPO=SpyCheese
-ARG TON_REPO_BRANCH=dht-ping
+ARG TON_REPO=ton-blockchain
+ARG TON_REPO_BRANCH=master
 WORKDIR /ton
 RUN git clone --recurse-submodules https://github.com/${TON_REPO}/ton.git . && \
     git checkout ${TON_REPO_BRANCH}
