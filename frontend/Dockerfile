@@ -1,6 +1,9 @@
 # 使用 Node.js 作為構建環境
 FROM node:latest as build
 
+ARG REACT_APP_API_URL
+ARG REACT_APP_API_KEY
+
 # 設置工作目錄
 WORKDIR /app
 
