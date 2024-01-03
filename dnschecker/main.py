@@ -6,6 +6,7 @@ import time
 import logging
 import asyncio
 from dnschecker.api.deps import dns_resolver_dep
+from dnschecker.api.dns import api as dns_api
 
 # Initialize a FastAPI application instance
 app = FastAPI()
