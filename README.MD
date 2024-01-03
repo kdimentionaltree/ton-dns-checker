@@ -52,5 +52,5 @@ These instructions will get you a copy of the project up and running on your loc
 
 ## Usage
 
-- Access the front-end interface at `http://localhost:3090`.
+- Access the front-end interface at `http://localhost:8090/docs`.
 - The interface will interact with the DNS checker backend to perform functionalities like DHT node status checking, ADNL address resolution, and more.
