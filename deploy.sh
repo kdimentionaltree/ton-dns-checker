@@ -1,12 +1,12 @@
 #!/bin/bash
 set -e
 
-# 设置默认环境或使用脚本的第一个参数
+# Set the default environment or use the first argument of the script
 export TONCENTER_ENV=${1:-stage}
 STACK_NAME="${TONCENTER_ENV}-dns-checker"
 echo "Stack: ${STACK_NAME}"
 
-# 检查是否有针对特定环境的 .env 文件
+# Check for the existence of an environment-specific .env file
 if [ -f ".env.${TONCENTER_ENV}" ]; then
     echo "Found env for ${TONCENTER_ENV}"
     ENV_FILE=".env.${TONCENTER_ENV}"
@@ -15,14 +15,14 @@ elif [ -f ".env" ]; then
     ENV_FILE=".env"
 fi
 
-# 加载环境变量
+# Load environment variables
 if [ ! -z "${ENV_FILE}" ]; then
-    set -a  # 自动导出所有变量
+    set -a  # Automatically export all variables
     source ${ENV_FILE}
     set +a
 fi
 
-# 根据环境选择配置文件
+# Choose configuration file based on environment
 if [[ "${TONCENTER_ENV}" == "testnet" ]]; then
     echo "Using testnet config"
     export TON_LITESERVER_CONFIG=private/testnet.json
@@ -31,14 +31,14 @@ else
     export TON_LITESERVER_CONFIG=private/mainnet.json
 fi
 
-# 构建并推送 Docker 镜像
+# Build and push Docker images
 docker compose build
 docker compose push
 
-# 使用 docker-compose.yaml 部署堆栈
+# Deploy the stack using docker-compose.yaml
 docker stack deploy -c docker-compose.yaml ${STACK_NAME}
 
-# 将服务连接到全局网络（如果存在）
+# Connect the service to the global network if it exists
 GLOBAL_NET_NAME=$(docker network ls --format '{{.Name}}' --filter NAME=toncenter-global)
 if [ ! -z "$GLOBAL_NET_NAME" ]; then
     echo "Found network: ${GLOBAL_NET_NAME}"

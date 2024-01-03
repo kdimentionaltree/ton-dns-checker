@@ -1,17 +1,17 @@
 #!/bin/bash
 
-# 退出脚本，如果任何命令执行失败
+# Exit the script if any command fails
 set -e
 
-# 创建一个目录来存储配置文件，如果目录不存在
+# Create a directory to store configuration files if it doesn't exist
 mkdir -p private
 
-# 下载 TON 主网配置文件
-# -q: 安静模式，不输出任何信息
-# -O: 指定输出文件名
+# Download TON mainnet configuration file
+# -q: Quiet mode, no output information
+# -O: Specify the output file name
 echo "Downloading TON mainnet configuration..."
 wget https://ton.org/global-config.json -q -O private/mainnet.json
 
-# 下载 TON 测试网配置文件
+# Download TON testnet configuration file
 echo "Downloading TON testnet configuration..."
 wget https://ton-blockchain.github.io/testnet-global.config.json -q -O private/testnet.json

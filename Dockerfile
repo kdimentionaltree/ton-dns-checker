@@ -1,60 +1,59 @@
-# 第一阶段：构建 TONLib (builder)
+# First Stage: Build TONLib (builder)
 FROM ubuntu:20.04 as builder
 
-# 安装基本工具和依赖
+# Install basic tools and dependencies
 RUN apt-get update && \
     DEBIAN_FRONTEND=noninteractive TZ=Etc/UTC apt-get -y install tzdata && \
     apt-get install -y build-essential cmake clang openssl libssl-dev zlib1g-dev gperf wget git curl libreadline-dev ccache libmicrohttpd-dev ninja-build pkg-config libsecp256k1-dev libsodium-dev
 
-# 克隆 TON 仓库并检出指定分支
+# Clone the TON repository and check out a specific branch
 ARG TON_REPO=ton-blockchain
 ARG TON_REPO_BRANCH=master
 WORKDIR /ton
 RUN git clone --recurse-submodules https://github.com/${TON_REPO}/ton.git . && \
     git checkout ${TON_REPO_BRANCH}
 
-# 构建 TONLib
+# Build TONLib
 RUN mkdir build && \
     cd build && \
     cmake -DCMAKE_BUILD_TYPE=Release -GNinja .. && \
-    ninja -j 6 dht-resolve dht-ping-servers
-    # cmake --build . -j$(nproc) --target dht-resolve dht-ping-servers
+    ninja -j 0 dht-resolve dht-ping-servers
 
-# 第二阶段：构建前端 (frontend_builder)
+# Second Stage: Frontend Build (frontend_builder)
 FROM node:18-bullseye as frontend_builder
 ARG REACT_APP_API_URL
 ARG REACT_APP_API_KEY
 
-# 复制前端代码并构建
+# Copy frontend code and build
 WORKDIR /app
 COPY frontend/ ./
 RUN yarn install && \
     yarn build
 
-# 第三阶段：最终运行环境配置
+# Third Stage: Final Runtime Environment Setup
 FROM ubuntu:20.04
 
-# 安装运行时依赖
+# Install runtime dependencies
 RUN apt-get update && \
     DEBIAN_FRONTEND=noninteractive TZ=Etc/UTC apt-get -y install tzdata && \
     apt-get install -y openssl libssl-dev wget curl libatomic1 zlib1g-dev gperf wget git curl libreadline-dev ccache libmicrohttpd-dev dnsutils python3-dev python3-pip && \
     pip3 install --no-cache-dir -U pip wheel
 
-# 复制构建好的 TONLib 二进制文件
+# Copy the built TONLib binary files
 COPY --from=builder /ton/build/dht/dht-resolve /app/binaries/dht-resolve
 COPY --from=builder /ton/build/dht/dht-ping-servers /app/binaries/dht-ping-servers
 RUN chmod +x /app/binaries/dht-resolve /app/binaries/dht-ping-servers
 
-# 复制并部署前端
+# Copy and deploy the frontend
 COPY --from=frontend_builder /app/build /app/static
 
-# 安装 Python 依赖
+# Install Python dependencies
 WORKDIR /app
 COPY requirements.txt .
 RUN pip3 install --no-cache-dir -r requirements.txt
 
-# 复制 DNS 检查器后端代码
+# Copy DNS Checker backend code
 COPY dnschecker/ ./dnschecker/
 
-# 设置容器启动时的默认命令
+# Set default command for container startup
 ENTRYPOINT [ "/bin/bash" ]

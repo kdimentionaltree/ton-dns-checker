@@ -1,32 +1,33 @@
-# 使用 Node.js 作為構建環境
+# Use Node.js as the build environment
 FROM node:latest as build
 
+# Arguments to pass environment variables
 ARG REACT_APP_API_URL
 ARG REACT_APP_API_KEY
 
-# 設置工作目錄
+# Set the working directory in the container
 WORKDIR /app
 
-# 複製 package.json 和 yarn.lock 文件
+# Copy package.json and yarn.lock files
 COPY package.json yarn.lock ./
 
-# 安裝依賴
+# Install dependencies
 RUN yarn install
 
-# 複製其餘的應用源代碼
+# Copy the rest of the application source code
 COPY . .
 
-# 構建應用
+# Build the application
 RUN yarn build
 
-# 使用 Nginx 作為服務器
+# Use Nginx as the server for the built application
 FROM nginx:alpine
 
-# 複製構建好的應用文件
+# Copy the built application files to Nginx's serve directory
 COPY --from=build /app/build /usr/share/nginx/html
 
-# 暴露 80 端口
+# Expose port 80 to the outside once the container has launched
 EXPOSE 80
 
-# 啟動 Nginx 並保持前台運行
+# Start Nginx and keep it running in the foreground
 CMD ["nginx", "-g", "daemon off;"]

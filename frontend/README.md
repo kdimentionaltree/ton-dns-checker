@@ -1,40 +1,40 @@
 # TON DNS Checker Frontend
 
-这是 TON DNS Checker 的前端部分。下面是安装和运行的指南。
+This is the frontend part of the TON DNS Checker. Here is the guide for installation and running.
 
-## 安装
+## Installation
 
-在开始之前，请确保您的机器上安装了 Node.js。
+Before starting, please ensure that Node.js is installed on your machine.
 
-### 开发服务器
+### Development Server
 
-要在本地启动开发服务器，请执行以下步骤：
+To start the development server locally, follow these steps:
 
-1. **安装依赖**:
+1. **Install Dependencies**:
    ```bash
    yarn install
    ```
 
-2. **启动开发服务器**:
+2. **Start the Development Server**:
    ```bash
    yarn start
    ```
 
-3. **访问应用**:
-   打开浏览器并访问 [http://127.0.0.1:3000](http://127.0.0.1:3000)。
+3. **Access the Application**:
+   Open your browser and visit [http://127.0.0.1:3090](http://127.0.0.1:3090).
 
-   **注意**: 确保在 `src/tools/fetchData.ts` 中设置了 `API_URL`，以指向有效的 api-dns 后端。
+   **Note**: Ensure that `API_URL` is set in `src/tools/fetchData.ts` to point to a valid api-dns backend.
 
-### 生产构建
+### Production Build
 
-要为生产环境构建应用，请执行以下步骤：
+To build the application for production, follow these steps:
 
-1. **构建应用**:
+1. **Build the Application**:
    ```bash
    yarn build
    ```
 
-   这将把应用构建到 `build` 文件夹。
+   This will build the application into the `build` folder.
 
-2. **部署应用**:
-   您可以将 `build` 文件夹托管在您自己的 Web 服务器上。
+2. **Deploy the Application**:
+   You can host the `build` folder on your own web server.
