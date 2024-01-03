@@ -31,7 +31,7 @@ def create_dns_routes(api: FastAPI):
 
     # Define a route to resolve an ADNL address
     @api.get('/resolve', response_model=List[DhtResolveModel])
-    async def get_resolve(adnl: str=Query(..., example='2D7CF7C6238E4E8B7DA16B0707222C3A95C8DB6A8E4FA4F101052306130EEFDC'), 
+    async def get_resolve(adnl: str=Query(..., example='516618CF6CBE9004F6883E742C9A2E3CA53ED02E3E36F4CEF62A98EE1E449174'), 
                           checker: DHTChecker=Depends(dht_checker_dep)):
         try:
             adnl = adnl.upper().strip()
