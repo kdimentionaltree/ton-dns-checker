@@ -4,7 +4,7 @@ FROM ubuntu:20.04 as builder
 # 安装基本工具和依赖
 RUN apt-get update && \
     DEBIAN_FRONTEND=noninteractive TZ=Etc/UTC apt-get -y install tzdata && \
-    apt-get install -y build-essential cmake clang openssl libssl-dev zlib1g-dev gperf wget git curl libreadline-dev ccache libmicrohttpd-dev
+    apt-get install -y build-essential cmake clang openssl libssl-dev zlib1g-dev gperf wget git curl libreadline-dev ccache libmicrohttpd-dev ninja-build
 
 # 克隆 TON 仓库并检出指定分支
 ARG TON_REPO=ton-blockchain
@@ -16,8 +16,9 @@ RUN git clone --recurse-submodules https://github.com/${TON_REPO}/ton.git . && \
 # 构建 TONLib
 RUN mkdir build && \
     cd build && \
-    cmake -DCMAKE_BUILD_TYPE=Release .. && \
-    cmake --build . -j$(nproc) --target dht-resolve dht-ping-servers
+    cmake -DCMAKE_BUILD_TYPE=Release  -GNinja .. && \
+    ninja -j 0 dht-resolve dht-ping-servers
+    # cmake --build . -j$(nproc) --target dht-resolve dht-ping-servers
 
 # 第二阶段：构建前端 (frontend_builder)
 FROM node:18-bullseye as frontend_builder
