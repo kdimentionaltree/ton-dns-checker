@@ -1,47 +1,49 @@
 version: '3.9'
 
 services:
-  # Redis 缓存服务配置
+  # Redis caching service configuration
   dns-checker-cache:
-    image: redis:latest  # 使用最新版本的 Redis
+    image: redis:latest  # Use the latest version of Redis
     networks:
-      - main  # 连接到名为 main 的网络
+      - main  # Connect to a network named 'main'
     deploy:
-      mode: replicated  # 使用复制模式
-      replicas: 1  # 设置副本数量为 1
+      mode: replicated  # Use replicated mode for service deployment
+      replicas: 1  # Set the number of replicas to 1
       placement:
-        constraints:  # 限制服务运行在特定节点上
+        constraints:  # Restrict service to run on specific nodes
           - "node.labels.${TONCENTER_ENV}.dns-checker==true"
 
+  # DNS checker service configuration
   dns-checker:
     build:
-      context: .  # Docker 构建上下文目录
-      dockerfile: Dockerfile  # Dockerfile 路径
-      args:  # 构建参数
+      context: .  # Context directory for Docker build
+      dockerfile: Dockerfile  # Path to the Dockerfile
+      args:  # Build arguments
         REACT_APP_API_URL: ${REACT_APP_API_URL}
         REACT_APP_API_KEY: ${REACT_APP_API_KEY}
-    command: -c "uvicorn dnschecker.main:app --host 0.0.0.0 --port 8090"  # 启动命令
+    command: -c "uvicorn dnschecker.main:app --host 0.0.0.0 --port 8090"  # Command to start the service
     ports:
-      - "8090:8090"  # 映射容器端口 8090 到主机的端口 8090
+      - "8090:8090"  # Map container port 8090 to host port 8090
     networks:
-      - main  # 连接到名为 main 的网络
-    secrets:  # 使用 Docker secret
+      - main  # Connect to a network named 'main'
+    secrets:  # Use Docker secrets
       - global-config
     deploy:
-      mode: replicated  # 使用复制模式
-      replicas: 1  # 设置副本数量为 1
+      mode: replicated  # Use replicated mode for service deployment
+      replicas: 1  # Set the number of replicas to 1
       placement:
-        constraints:  # 限制服务运行在特定节点上
+        constraints:  # Restrict service to run on specific nodes
           - "node.labels.${TONCENTER_ENV}.dns-checker==true"
-    healthcheck:  # 健康检查配置
-      test: ["CMD", "curl", "-f", "http://0.0.0.0:8090/healthcheck"]
-      interval: 5s  # 检查间隔
-      timeout: 10s  # 超时时间
-      retries: 5  # 重试次数
-      start_period: 40s  # 启动周期
+    healthcheck:  # Health check configuration
+      test: ["CMD", "curl", "-f", "http://127.0.0.1:8090/healthcheck"]
+      interval: 5s  # Interval for health checks
+      timeout: 10s  # Timeout for health checks
+      retries: 5  # Number of retries for health checks
+      start_period: 40s  # Start period for health check
 
+  # Frontend service configuration
   frontend:
-    build: 
+    build:
       context: ./frontend
       args:
         REACT_APP_API_URL: ${REACT_APP_API_URL}
@@ -51,14 +53,13 @@ services:
     networks:
       - main
 
-
-# 网络配置
+# Network configuration
 networks:
   main:
-    attachable: true  # 允许手动连接
-    external: false   # 非外部网络
+    attachable: true  # Allow manual connection to the network
+    external: false   # Not an external network
 
-# Docker secret 配置
+# Docker secrets configuration
 secrets:
   global-config:
-    file: ${TON_LITESERVER_CONFIG:-private/mainnet.json}  # 文件路径，支持环境变量
+    file: ${TON_LITESERVER_CONFIG:-private/mainnet.json}  # File path, supports environment variables
