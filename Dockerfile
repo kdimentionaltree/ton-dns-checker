@@ -4,7 +4,7 @@ FROM ubuntu:20.04 as builder
 # 安装基本工具和依赖
 RUN apt-get update && \
     DEBIAN_FRONTEND=noninteractive TZ=Etc/UTC apt-get -y install tzdata && \
-    apt-get install -y build-essential cmake clang openssl libssl-dev zlib1g-dev gperf wget git curl libreadline-dev ccache libmicrohttpd-dev ninja-build pkg-config
+    apt-get install -y build-essential cmake clang openssl libssl-dev zlib1g-dev gperf wget git curl libreadline-dev ccache libmicrohttpd-dev ninja-build pkg-config libsecp256k1-dev libsodium-dev
 
 # 克隆 TON 仓库并检出指定分支
 ARG TON_REPO=ton-blockchain
