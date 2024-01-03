@@ -40,7 +40,13 @@ services:
       timeout: 10s  # 超时时间
       retries: 5  # 重试次数
       start_period: 40s  # 启动周期
-
+  
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:80"
+    networks:
+      - main
 
 # 网络配置
 networks:
