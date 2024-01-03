@@ -14,7 +14,6 @@ services:
           - "node.labels.${TONCENTER_ENV}.dns-checker==true"
 
   dns-checker:
-    image: localhost:5000/ton-dns-checker:${TONCENTER_ENV}  # 指定镜像和标签
     build:
       context: .  # Docker 构建上下文目录
       dockerfile: Dockerfile  # Dockerfile 路径
@@ -35,12 +34,12 @@ services:
         constraints:  # 限制服务运行在特定节点上
           - "node.labels.${TONCENTER_ENV}.dns-checker==true"
     healthcheck:  # 健康检查配置
-      test: ["CMD", "curl", "-f", "http://localhost:8090/healthcheck"]
+      test: ["CMD", "curl", "-f", "http://0.0.0.0:8090/healthcheck"]
       interval: 5s  # 检查间隔
       timeout: 10s  # 超时时间
       retries: 5  # 重试次数
       start_period: 40s  # 启动周期
-  
+
   frontend:
     build: 
       context: ./frontend
@@ -51,6 +50,7 @@ services:
       - "3000:80"
     networks:
       - main
+
 
 # 网络配置
 networks:

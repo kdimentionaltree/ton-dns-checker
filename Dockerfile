@@ -17,7 +17,7 @@ RUN git clone --recurse-submodules https://github.com/${TON_REPO}/ton.git . && \
 RUN mkdir build && \
     cd build && \
     cmake -DCMAKE_BUILD_TYPE=Release -GNinja .. && \
-    ninja -j 0 dht-resolve dht-ping-servers
+    ninja -j 6 dht-resolve dht-ping-servers
     # cmake --build . -j$(nproc) --target dht-resolve dht-ping-servers
 
 # 第二阶段：构建前端 (frontend_builder)
