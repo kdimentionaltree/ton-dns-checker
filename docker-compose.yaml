@@ -42,14 +42,15 @@ services:
       start_period: 40s  # 启动周期
   
   frontend:
-    build: ./frontend
+    build: 
+      context: ./frontend
+      args:
+        REACT_APP_API_URL: ${REACT_APP_API_URL}
+        REACT_APP_API_KEY: ${REACT_APP_API_KEY}
     ports:
       - "3000:80"
     networks:
       - main
-    environment:
-      - REACT_APP_API_URL=${REACT_APP_API_URL}
-      - REACT_APP_API_KEY=${REACT_APP_API_KEY}
 
 # 网络配置
 networks:
