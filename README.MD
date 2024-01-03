@@ -54,14 +54,3 @@ These instructions will get you a copy of the project up and running on your loc
 
 - Access the front-end interface at `http://localhost:3090`.
 - The interface will interact with the DNS checker backend to perform functionalities like DHT node status checking, ADNL address resolution, and more.
-
-## Contributing
-
-Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduct, and the process for submitting pull requests to us.
-
-## License
-
-This project is licensed under the [Your License] - see the [LICENSE.md](LICENSE.md) file for details.
-```
-
-This README provides a comprehensive guide to getting started with the application, including its main features, how to set it up, and where to access its functionalities. Adjust the URLs and paths as per your actual repository and file structure.
