@@ -47,6 +47,9 @@ services:
       - "3000:80"
     networks:
       - main
+    environment:
+      - REACT_APP_API_URL=${REACT_APP_API_URL}
+      - REACT_APP_API_KEY=${REACT_APP_API_KEY}
 
 # 网络配置
 networks:
