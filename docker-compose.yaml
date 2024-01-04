@@ -1,45 +1,65 @@
 version: '3.9'
+
 services:
+  # Redis caching service configuration
   dns-checker-cache:
-    image: redis:latest
+    image: redis:latest  # Use the latest version of Redis
     networks:
-      - main
+      - main  # Connect to a network named 'main'
     deploy:
-      mode: replicated
-      replicas: 1
+      mode: replicated  # Use replicated mode for service deployment
+      replicas: 1  # Set the number of replicas to 1
       placement:
-        constraints:
+        constraints:  # Restrict service to run on specific nodes
           - "node.labels.${TONCENTER_ENV}.dns-checker==true"
+
+  # DNS checker service configuration
   dns-checker:
-    image: localhost:5000/ton-dns-checker:${TONCENTER_ENV}
     build:
-      context: .
-      dockerfile: Dockerfile
+      context: .  # Context directory for Docker build
+      dockerfile: Dockerfile  # Path to the Dockerfile
+      args:  # Build arguments
+        REACT_APP_API_URL: ${REACT_APP_API_URL}
+        REACT_APP_API_KEY: ${REACT_APP_API_KEY}
+    command: -c "uvicorn dnschecker.main:app --host 0.0.0.0 --port 8090"  # Command to start the service
+    ports:
+      - "8090:8090"  # Map container port 8090 to host port 8090
+    networks:
+      - main  # Connect to a network named 'main'
+    secrets:  # Use Docker secrets
+      - global-config
+    deploy:
+      mode: replicated  # Use replicated mode for service deployment
+      replicas: 1  # Set the number of replicas to 1
+      placement:
+        constraints:  # Restrict service to run on specific nodes
+          - "node.labels.${TONCENTER_ENV}.dns-checker==true"
+    healthcheck:  # Health check configuration
+      test: ["CMD", "curl", "-f", "http://127.0.0.1:8090/healthcheck"]
+      interval: 5s  # Interval for health checks
+      timeout: 10s  # Timeout for health checks
+      retries: 5  # Number of retries for health checks
+      start_period: 40s  # Start period for health check
+
+  # Frontend service configuration
+  frontend:
+    build:
+      context: ./frontend
       args:
         REACT_APP_API_URL: ${REACT_APP_API_URL}
         REACT_APP_API_KEY: ${REACT_APP_API_KEY}
-    # command: -c "uvicorn dnschecker.mock:app --host 0.0.0.0 --port 8081"
-    command: -c "uvicorn dnschecker.main:app --host 0.0.0.0 --port 8081"
+    ports:
+      - "3090:80"
     networks:
       - main
-    secrets:
-      - global-config
-    deploy:
-      mode: replicated
-      replicas: 1
-      placement:
-        constraints:
-          - "node.labels.${TONCENTER_ENV}.dns-checker==true"
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8081/healthcheck"]
-      interval: 5s
-      timeout: 10s
-      retries: 5
-      start_period: 40s
+
+# Network configuration
 networks:
   main:
-    attachable: true
-    external: false
+    attachable: true  # Allow manual connection to the network
+    external: false   # Not an external network
+
+# Docker secrets configuration
 secrets:
   global-config:
-    file: ${TON_LITESERVER_CONFIG:-private/mainnet.json}
+    file: ${TON_LITESERVER_CONFIG:-private/mainnet.json}  # File path, supports environment variables
