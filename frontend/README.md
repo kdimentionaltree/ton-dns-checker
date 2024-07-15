@@ -1,17 +1,40 @@
-# TON DNS Checker[frontend]
+# TON DNS Checker Frontend
 
-## Install
+This is the frontend part of the TON DNS Checker. Here is the guide for installation and running.
 
-### Dev server(node js on your machine required):
+## Installation
 
-`yarn install && yarn start`
+Before starting, please ensure that Node.js is installed on your machine.
 
-[http://localhost:3000](http://localhost:3000) - stand.
-Set API_URL in `src/tools/fetchData.ts` to valid api-dns backend to run frontend dev-server.
+### Development Server
 
-### Production build(node js on your machine required):
+To start the development server locally, follow these steps:
 
-`yarn build`
+1. **Install Dependencies**:
+   ```bash
+   yarn install
+   ```
 
-Builds the app for production to the `build` folder.\
-Then you can host `build` folder on your own web server.
+2. **Start the Development Server**:
+   ```bash
+   yarn start
+   ```
+
+3. **Access the Application**:
+   Open your browser and visit [http://127.0.0.1:3090](http://127.0.0.1:3090).
+
+   **Note**: Ensure that `API_URL` is set in `src/tools/fetchData.ts` to point to a valid api-dns backend.
+
+### Production Build
+
+To build the application for production, follow these steps:
+
+1. **Build the Application**:
+   ```bash
+   yarn build
+   ```
+
+   This will build the application into the `build` folder.
+
+2. **Deploy the Application**:
+   You can host the `build` folder on your own web server.
